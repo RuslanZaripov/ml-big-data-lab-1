@@ -99,7 +99,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDS=credentials('ml-big-data-lab-1')
+        DOCKERHUB_CREDS=credentials('bigdata-ml-lab1')
     }
 
     options {
@@ -176,10 +176,8 @@ pipeline {
 
     post {
         always {
-            node {
                 sh 'docker logout'
                 cleanWs()
-            }
         }
     }
 }
