@@ -26,7 +26,7 @@ pipeline {
             }
         }
 
-        stage('Login'){
+        stage('Login') {
             steps {
                 //withCredentials([usernamePassword(credentialsId: 'mle-template', passwordVariable: 'DOCKER_REGISTRY_PWD', usernameVariable: 'DOCKER_REGISTRY_USER')]){
                 //bat 'chcp 65001 && echo %DOCKER_REGISTRY_PWD% | docker login -u %DOCKER_REGISTRY_USER% --password-stdin'}
@@ -57,17 +57,17 @@ pipeline {
         stage('Checkout container logs') {
             steps {
                 dir("ml-big-data-lab-1") {
-                        bat '''
-                            docker-compose up -d
-                            for /f %%i in ('docker ps -qf "name=^ml-big-data-lab-1"') do set containerId=%%i
-                            echo %containerId%
-                            IF "%containerId%" == "" (
-                                echo "No container running"
-                            )
-                            ELSE (
-                                docker logs --tail 1000 -f %containerId%
-                            )
-                        '''
+                    bat '''
+                        docker-compose up -d
+                        for /f %%i in ('docker ps -qf "name=^ml-big-data-lab-1-web-1"') do set containerId=%%i
+                        echo %containerId%
+                        IF "%containerId%" == "" (
+                            echo "No container running"
+                        )
+                        ELSE (
+                            docker logs --tail 1000 -f %containerId%
+                        )
+                    '''
                 }
             }
         }
@@ -95,89 +95,3 @@ pipeline {
         }
     }
 }
-// pipeline {
-//     agent any
-
-//     environment {
-//         DOCKERHUB_CREDS=credentials('bigdata-ml-lab1')
-//     }
-
-//     options {
-//         timestamps()
-//         skipDefaultCheckout(true)
-// 	}
-//     stages {
-//         stage('Checkout repo dir') {
-//             steps {
-//                     sh 'git clone -b main https://github.com/RuslanZaripov/ml-big-data-lab-1.git'
-//                     sh 'cd ml-big-data-lab-1 && ls -lash'
-//                     sh 'whoami'
-// 				}
-// 			}
-
-//         stage('Login') {
-//             steps{
-//                     sh 'docker login -u ${DOCKERHUB_CREDS_USR} -p ${DOCKERHUB_CREDS_PSW}'
-//                 }
-//             }
-
-//         stage('Create and run docker container') {
-//             steps {
-//                 script {
-//                     try {
-//                             sh 'cd ml-big-data-lab-1 && docker compose build'
-//                         }
-
-//                     finally {
-//                             sh 'cd ml-big-data-lab-1 && docker compose up -d'
-//                         }
-// 				    }
-//                 }
-//             }
-
-//         // use for multi containers:
-//         //docker exec %containerId% cd app && coverage run src/unit_tests/test_preprocess.py && coverage run -a src/unit_tests/test_training.py && coverage report -m
-//         //use for single container (with auth):
-//         //docker run --name mle-template_web_1 cd app && coverage run src/unit_tests/test_preprocess.py && coverage run -a src/unit_tests/test_training.py && coverage report -m
-
-//         stage('Checkout container logs') {
-//             steps {
-//                 dir("mle-template") {
-//                         sh '''
-//                             docker compose up -d
-//                             containerId=$(docker ps -qf "name=^ml-big-data-lab-1")
-//                             if [[ -z "$containerId" ]]; then
-//                                 echo "No container running"
-//                             else
-                                
-//                                 docker logs --tail 1000 -f "$containerId"
-//                             fi
-//                         '''
-//                     }
-//             }
-//         }
-
-//         stage('Checkout coverage report'){
-//             steps{
-//                 dir("ml-big-data-lab-1"){
-//                         sh '''
-//                         docker compose logs -t --tail 10
-//                         '''
-//                 }
-//             }
-//         }
-
-//         stage('Push'){
-//             steps{
-//                     sh 'docker push zarus03/ml-big-data-lab-1:latest'
-//             }
-//         }
-// 	}
-
-//     post {
-//         always {
-//                 sh 'docker logout'
-//                 cleanWs()
-//         }
-//     }
-// }
