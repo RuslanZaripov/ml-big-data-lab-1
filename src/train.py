@@ -43,9 +43,16 @@ class MultiModel():
         self.d_tree_path = os.path.join(self.project_experiments_path, "d_tree.sav")
         self.log.info("MultiModel is ready")
 
-    def log_reg(self, predict=False) -> bool:
-        # TODO: add try catch for parameters
-        classifier = LogisticRegression(max_iter=self.config.getint("LOG_REG", "max_iter"))
+    def log_reg(self, use_config: bool, predict=False, max_iter=1000) -> bool:
+        if use_config:
+            try:
+                 classifier = LogisticRegression(max_iter=self.config.getint("LOG_REG", "max_iter"))
+            except KeyError:
+                self.log.error(traceback.format_exc())
+                self.log.warning(f'Using config:{use_config}, no params')
+                sys.exit(1)
+        else:
+             classifier = LogisticRegression(max_iter=max_iter)
         try:
             classifier.fit(self.X_train, self.y_train)
         except Exception:
@@ -186,7 +193,7 @@ class MultiModel():
 
 if __name__ == "__main__":
     multi_model = MultiModel()
-    multi_model.log_reg(predict=True)
+    multi_model.log_reg(use_config=False, predict=True)
     multi_model.rand_forest(use_config=False, predict=True)
     multi_model.knn(use_config=False, predict=True)
     multi_model.gnb(predict=True)
