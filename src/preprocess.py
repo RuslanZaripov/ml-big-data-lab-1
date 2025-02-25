@@ -14,7 +14,7 @@ class DataMaker():
 
         self.config = configparser.ConfigParser()
         
-        self.project_data_path = ".\data"
+        self.project_data_path = os.path.join(os.getcwd(), "data")
         
         self.zip_data_path = os.path.join(self.project_data_path, "fashion-mnist.zip")
 
@@ -49,6 +49,7 @@ class DataMaker():
     def split_data(self) -> bool:
         if not os.path.exists(self.zip_data_path):
             self.log.debug(f"before split data {os.getcwd()=}")
+            self.log.debug(f"{os.listdir(os.getcwd())=}")
 
         import zipfile
         with zipfile.ZipFile(self.zip_data_path, 'r') as zip_ref:
