@@ -1,6 +1,7 @@
 import configparser
 import os
 import pandas as pd
+import zipfile
 
 from logger import Logger
 
@@ -47,18 +48,19 @@ class DataMaker():
             return False
 
     def split_data(self) -> bool:
-        if not os.path.exists(self.zip_data_path):
-            self.log.debug(f"before split data {os.getcwd()=}")
-            self.log.debug(f"{os.listdir(os.getcwd())=}")
+        self.log.info('Start preprocessing...')
 
-        import zipfile
         with zipfile.ZipFile(self.zip_data_path, 'r') as zip_ref:
             zip_ref.extractall(self.project_data_path)
+
+        self.log.info(f"Unzip {self.zip_data_path} done.")
 
         self.config["SPLIT_DATA"] = {}
 
         self.split_data_labels(self.train_data_path)
         self.split_data_labels(self.test_data_path)
+
+        self.log.info(f"Data preprocessing done.")
 
         with open('config.ini', 'w') as configfile:
             self.config.write(configfile)
