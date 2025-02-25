@@ -81,16 +81,12 @@ class Predictor():
 
             for test in os.listdir(tests_path):
                 json_path = os.path.join(tests_path, test)
-                print(f"{json_path=}")
                 with open(json_path) as f:
                     try:
-                        print(f"{f=}")
                         data = json.load(f)
-                        print(f"{data=}")
                         X = self.sc.transform(pd.json_normalize(data, record_path=['X']))
                         y = pd.json_normalize(data, record_path=['y'])
                         score = classifier.score(X, y)
-                        print(f'{args.model} has {score} score')
                     except Exception:
                         self.log.error(traceback.format_exc())
                         sys.exit(1)
