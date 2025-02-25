@@ -76,8 +76,8 @@ class Predictor():
             self.log.info(f'{self.config[args.model]["path"]} passed smoke tests')
             
         elif args.tests == "func":
-            tests_path = ".\\tests"
-            exp_path = ".\experiments"
+            tests_path = os.path.join(os.getcwd(), "tests")
+            exp_path = os.path.join(os.getcwd(), "experiments")
 
             for test in os.listdir(tests_path):
                 json_path = os.path.join(tests_path, test)
