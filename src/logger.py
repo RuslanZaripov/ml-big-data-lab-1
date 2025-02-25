@@ -3,7 +3,7 @@ import os
 import sys
 
 FORMATTER = logging.Formatter(
-    "%(asctime)s — %(name)s — %(levelname)s — %(message)s")
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 LOG_FILE = os.path.join(os.getcwd(), "logfile.log")
 
 
