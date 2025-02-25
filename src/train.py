@@ -34,7 +34,7 @@ class MultiModel():
         self.X_train = sc.fit_transform(self.X_train)
         self.X_test = sc.transform(self.X_test)
 
-        self.project_experiments_path = ".\experiments"
+        self.project_experiments_path = os.path.join(os.getcwd(), "experiments")
         self.log_reg_path = os.path.join(self.project_experiments_path, "log_reg.sav")
         self.rand_forest_path = os.path.join(self.project_experiments_path, "rand_forest.sav")
         self.knn_path = os.path.join(self.project_experiments_path, "knn.sav")
