@@ -33,7 +33,7 @@ pipeline {
         stage('Run container') {
             steps {
                 bat '''
-                    docker run --name ml-big-data-lab-1 -p 80:5556 -d zaru03/ml-big-data-lab-1:latest
+                    docker run --name ml-big-data-lab-1 -p 80:5556 -d zarus03/ml-big-data-lab-1:latest
                 '''
             }
         }
