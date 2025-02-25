@@ -47,6 +47,10 @@ class DataMaker():
             return False
 
     def split_data(self) -> bool:
+        if not os.path.exists(self.zip_data_path):
+            print(f"{os.listdir(self.project_data_path)}")
+            print(f"{os.getcwd()=}")
+
         import zipfile
         with zipfile.ZipFile(self.zip_data_path, 'r') as zip_ref:
             zip_ref.extractall(self.project_data_path)
