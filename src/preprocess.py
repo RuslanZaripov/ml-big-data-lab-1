@@ -21,6 +21,9 @@ class DataMaker():
 
         self.train_data_path = os.path.join(self.project_data_path, "fashion-mnist_train.csv")
         self.test_data_path = os.path.join(self.project_data_path, "fashion-mnist_test.csv")
+
+        self.config['DATA'] = {'train': self.train_data_path,
+                               'test': self.test_data_path}
        
         self.log.info("DataMaker is ready")
 
@@ -38,14 +41,13 @@ class DataMaker():
 
         X.to_csv(X_path, index=True)
         y.to_csv(y_path, index=True)
+
         if os.path.isfile(X_path) and os.path.isfile(y_path):
             self.log.info(f"{subset_mode} X and y data is ready")
-            self.config["SPLIT_DATA"].update({f'X_{subset_mode}': X_path,
-                                              f'y_{subset_mode}': y_path})
-            return os.path.isfile(X_path) and os.path.isfile(y_path)
         else:
             self.log.error(f"{subset_mode} X and y data is not ready")
-            return False
+
+        return X_path, y_path
 
     def split_data(self) -> bool:
         self.log.info('Start preprocessing...')
@@ -53,17 +55,23 @@ class DataMaker():
         with zipfile.ZipFile(self.zip_data_path, 'r') as zip_ref:
             zip_ref.extractall(self.project_data_path)
 
-        self.log.info(f"Unzip {self.zip_data_path} done.")
+        self.log.info(f"Unzip {self.zip_data_path} done")
 
-        self.config["SPLIT_DATA"] = {}
+        X_train, y_train = self.split_data_labels(self.train_data_path)
+        X_test, y_test = self.split_data_labels(self.test_data_path)
+        
+        self.config["SPLIT_DATA"] = {'X_train': X_train,
+                                     'X_test': X_test,
+                                     'y_train': y_train,
+                                     'y_test': y_test}
 
-        self.split_data_labels(self.train_data_path)
-        self.split_data_labels(self.test_data_path)
-
-        self.log.info(f"Data preprocessing done.")
+        self.log.info(f"Data preprocessing done")
 
         with open('config.ini', 'w') as configfile:
             self.config.write(configfile)
+
+        return all([os.path.exists(path) 
+                    for path in self.config['SPLIT_DATA'].values()])
 
 if __name__ == "__main__":
     data_maker = DataMaker()

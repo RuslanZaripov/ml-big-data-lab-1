@@ -17,15 +17,12 @@ class TestDataMaker(unittest.TestCase):
     def setUp(self) -> None:
         self.data_maker = DataMaker()
 
-    def test_get_data(self):
-        self.assertEqual(self.data_maker.get_data(), True)
-
     def test_split_data(self):
         self.assertEqual(self.data_maker.split_data(), True)
 
-    def test_save_splitted_data(self):
-        self.assertEqual(self.data_maker.save_splitted_data(pd.read_csv(
-            config["DATA"]["x_data"], index_col=0), config["DATA"]["x_data"]), True)
+    def test_split_data_labels(self):
+        X_test, y_test = self.data_maker.split_data_labels(config["DATA"]["test"])
+        self.assertEqual(os.path.isfile(X_test) and os.path.isfile(y_test), True)
 
 
 if __name__ == "__main__":
