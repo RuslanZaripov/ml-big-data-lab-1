@@ -16,6 +16,8 @@ class DataMaker():
         
         self.project_data_path = ".\data"
         
+        self.zip_data_path = os.path.join(self.project_data_path, "fashion-mnist.zip")
+
         self.train_data_path = os.path.join(self.project_data_path, "fashion-mnist_train.csv")
         self.test_data_path = os.path.join(self.project_data_path, "fashion-mnist_test.csv")
        
@@ -45,6 +47,10 @@ class DataMaker():
             return False
 
     def split_data(self) -> bool:
+        import zipfile
+        with zipfile.ZipFile(self.zip_data_path, 'r') as zip_ref:
+            zip_ref.extractall(self.project_data_path)
+
         self.config["SPLIT_DATA"] = {}
 
         self.split_data_labels(self.train_data_path)
