@@ -18,7 +18,7 @@ class TestMultiModel(unittest.TestCase):
         self.multi_model = MultiModel()
 
     def test_log_reg(self):
-        self.assertEqual(self.multi_model.log_reg(), True)
+        self.assertEqual(self.multi_model.log_reg(use_config=False), True)
 
     def test_rand_forest(self):
         self.assertEqual(self.multi_model.rand_forest(use_config=False), True)
