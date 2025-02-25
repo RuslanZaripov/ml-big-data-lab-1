@@ -48,8 +48,7 @@ class DataMaker():
 
     def split_data(self) -> bool:
         if not os.path.exists(self.zip_data_path):
-            print(f"{os.listdir(self.project_data_path)}")
-            print(f"{os.getcwd()=}")
+            self.log.debug(f"before split data {os.getcwd()=}")
 
         import zipfile
         with zipfile.ZipFile(self.zip_data_path, 'r') as zip_ref:
