@@ -4,7 +4,10 @@ services:
        command: bash -c "
             python src/preprocess.py 
             && python src/train.py 
-            && python src/predict.py -m LOG_REG -t func 
+            && python src/predict.py -m LOG_REG -t func
+            && coverage run src/unit_tests/test_preprocess.py
+            && coverage run -a src/unit_tests/test_training.py
+            && coverage report -m
             && (python src/app.py --model LOG_REG &) 
             && sleep 30
             && curl -X GET http://localhost:8000/
