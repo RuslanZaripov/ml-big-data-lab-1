@@ -35,11 +35,10 @@ args = parser.parse_args()
 
 try:
     classifier = pickle.load(open(config[args.model]["path"], "rb"))
+    scaler = pickle.load(open(config["STD_SCALER"]["path"], "rb"))
 except FileNotFoundError:
     log.error(traceback.format_exc())
     sys.exit(1)
-
-scaler = StandardScaler()
 
 log.info('web service model initialized')
 
@@ -58,7 +57,7 @@ async def predict(input_data: PredictionInput):
         X = scaler.transform(pd.json_normalize(input_data.X))
         y = pd.json_normalize(input_data.y)
         score = classifier.score(X, y)
-        pred = classifier.predict(X)
+        pred = classifier.predict(X).tolist()
         return {"prediction": pred, "score": score}
     except Exception as e:
         log.error(traceback.format_exc())

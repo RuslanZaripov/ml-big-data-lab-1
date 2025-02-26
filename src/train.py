@@ -30,11 +30,15 @@ class MultiModel():
         self.X_test = pd.read_csv(self.config["SPLIT_DATA"]["X_test"], index_col=0)
         self.y_test = pd.read_csv(self.config["SPLIT_DATA"]["y_test"], index_col=0).to_numpy().reshape(-1)
         
+        self.project_experiments_path = os.path.join(os.getcwd(), "experiments")
+        
+        self.sc_path = os.path.join(self.project_experiments_path, 'sc.pkl')
+        
         sc = StandardScaler()
         self.X_train = sc.fit_transform(self.X_train)
         self.X_test = sc.transform(self.X_test)
+        self.save_model(sc, self.sc_path, 'STD_SCALER', {'path': self.sc_path})
 
-        self.project_experiments_path = os.path.join(os.getcwd(), "experiments")
         self.log_reg_path = os.path.join(self.project_experiments_path, "log_reg.sav")
         self.rand_forest_path = os.path.join(self.project_experiments_path, "rand_forest.sav")
         self.knn_path = os.path.join(self.project_experiments_path, "knn.sav")
@@ -43,7 +47,7 @@ class MultiModel():
         self.d_tree_path = os.path.join(self.project_experiments_path, "d_tree.sav")
         self.log.info("MultiModel is ready")
 
-    def log_reg(self, use_config: bool, predict=False, max_iter=1000) -> bool:
+    def log_reg(self, use_config: bool, predict=False, max_iter=100) -> bool:
         if use_config:
             try:
                  classifier = LogisticRegression(max_iter=self.config.getint("LOG_REG", "max_iter"))

@@ -51,9 +51,11 @@ class Predictor():
         self.X_test = pd.read_csv(self.config["SPLIT_DATA"]["X_test"], index_col=0)
         self.y_test = pd.read_csv(self.config["SPLIT_DATA"]["y_test"], index_col=0)
         
-        self.sc = StandardScaler()
-        self.X_train = self.sc.fit_transform(self.X_train)
-        self.X_test = self.sc.transform(self.X_test)
+        try:
+            self.sc = pickle.load(open(self.config["STD_SCALER"]["path"], "rb"))
+        except FileNotFoundError:
+            self.log.error(traceback.format_exc())
+            sys.exit(1)
         
         self.log.info("Predictor is ready")
 
