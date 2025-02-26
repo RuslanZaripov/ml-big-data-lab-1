@@ -61,7 +61,8 @@ class MultiModel():
         if predict:
             y_pred = classifier.predict(self.X_test)
             print(accuracy_score(self.y_test, y_pred))
-        params = {'path': self.log_reg_path}
+        params = {'max_iter': max_iter,
+                  'path': self.log_reg_path}
         return self.save_model(classifier, self.log_reg_path, "LOG_REG", params)
 
     def rand_forest(self, use_config: bool, n_trees=100, criterion="entropy", predict=False) -> bool:
