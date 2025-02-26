@@ -2,12 +2,15 @@ services:
    web:
        build: .
        command: bash -c "
-           python src/preprocess.py 
-           && python src/train.py 
-           && python src/predict.py -m LOG_REG -t func 
-           && (fastapi run src/app.py --port 8000 &) 
-           && sleep 30
-           && curl -X GET http://localhost:8000/"
+            python src/preprocess.py 
+            && python src/train.py 
+            && python src/predict.py -m LOG_REG -t func 
+            && (fastapi run src/app.py --port 8000 &) 
+            && sleep 30
+            && curl -X GET http://localhost:8000/
+            && curl -X POST http://localhost:8000/predict \
+                    -H 'Content-Type":" application/json' \
+                    --data-binary @tests/test_0.json"
        ports:
            - 8000:8000
        image: zarus03/ml-big-data-lab-1:latest
