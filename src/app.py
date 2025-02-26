@@ -9,6 +9,7 @@ import sys
 import pickle
 import configparser
 import argparse
+import uvicorn
 
 SHOW_LOG = True
 logger = Logger(SHOW_LOG)
@@ -62,3 +63,6 @@ async def predict(input_data: PredictionInput):
     except Exception as e:
         log.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
