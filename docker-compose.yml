@@ -1,7 +1,7 @@
 services:
    web:
        build: .
-       command: ./start.sh 
+       command: /app/start.sh 
        ports:
            - 8000:8000
        image: zarus03/ml-big-data-lab-1:latest
