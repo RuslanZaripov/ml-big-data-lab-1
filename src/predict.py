@@ -5,7 +5,6 @@ import os
 import json
 import pandas as pd
 import pickle
-from sklearn.preprocessing import StandardScaler
 import shutil
 import sys
 import time
@@ -19,32 +18,14 @@ SHOW_LOG = True
 
 class Predictor():
 
-    def __init__(self) -> None:
+    def __init__(self, args) -> None:
         logger = Logger(SHOW_LOG)
         self.log = logger.get_logger(__name__)
         
         self.config = configparser.ConfigParser()
         self.config.read("config.ini")
-        
-        self.parser = argparse.ArgumentParser(description="Predictor")
-        
-        self.parser.add_argument("-m", "--model",
-                                 type=str,
-                                 help="Select model",
-                                 required=True,
-                                 default="LOG_REG",
-                                 const="LOG_REG",
-                                 nargs="?",
-                                 choices=["LOG_REG", "RAND_FOREST", "KNN", "GNB", "D_TREE"])
-        
-        self.parser.add_argument("-t", "--tests",
-                                 type=str,
-                                 help="Select tests",
-                                 required=True,
-                                 default="smoke",
-                                 const="smoke",
-                                 nargs="?",
-                                 choices=["smoke", "func"])
+
+        self.args = args
         
         self.X_train = pd.read_csv(self.config["SPLIT_DATA"]["X_train"], index_col=0)
         self.y_train = pd.read_csv(self.config["SPLIT_DATA"]["y_train"], index_col=0)
@@ -60,24 +41,23 @@ class Predictor():
         self.log.info("Predictor is ready")
 
     def predict(self) -> bool:
-        args = self.parser.parse_args()
         try:
-            classifier = pickle.load(open(self.config[args.model]["path"], "rb"))
+            classifier = pickle.load(open(self.config[self.args.model]["path"], "rb"))
         except FileNotFoundError:
             self.log.error(traceback.format_exc())
             sys.exit(1)
             
-        if args.tests == "smoke":
+        if self.args.tests == "smoke":
             try:
                 score = classifier.score(self.X_test, self.y_test)
-                print(f'{args.model} has {score} score')
+                print(f'{self.args.model} has {score} score')
             except Exception:
                 self.log.error(traceback.format_exc())
                 sys.exit(1)
 
-            self.log.info(f'{self.config[args.model]["path"]} passed smoke tests')
+            self.log.info(f'{self.config[self.args.model]["path"]} passed smoke tests')
             
-        elif args.tests == "func":
+        elif self.args.tests == "func":
             tests_path = os.path.join(os.getcwd(), "tests")
             exp_path = os.path.join(os.getcwd(), "experiments")
 
@@ -93,12 +73,12 @@ class Predictor():
                         self.log.error(traceback.format_exc())
                         sys.exit(1)
 
-                    self.log.info(f'{self.config[args.model]["path"]} passed func test {f.name}')
+                    self.log.info(f'{self.config[self.args.model]["path"]} passed func test {f.name}')
 
                     exp_data = {
-                        "model": args.model,
-                        "model params": dict(self.config.items(args.model)),
-                        "tests": args.tests,
+                        "model": self.args.model,
+                        "model params": dict(self.config.items(self.args.model)),
+                        "tests": self.args.tests,
                         "score": str(score),
                         "X_test path": self.config["SPLIT_DATA"]["x_test"],
                         "y_test path": self.config["SPLIT_DATA"]["y_test"],
@@ -111,11 +91,33 @@ class Predictor():
                         yaml.safe_dump(exp_data, exp_f, sort_keys=False) 
                     
                     shutil.copy(os.path.join(os.getcwd(), "logfile.log"), os.path.join(exp_dir,"exp_logfile.log"))
-                    shutil.copy(self.config[args.model]["path"], os.path.join(exp_dir,f'exp_{args.model}.sav'))
+                    shutil.copy(self.config[self.args.model]["path"], os.path.join(exp_dir,f'exp_{self.args.model}.sav'))
 
         return True
 
 
 if __name__ == "__main__":
-    predictor = Predictor()
+    parser = argparse.ArgumentParser(description="Predictor")
+        
+    parser.add_argument("-m", "--model",
+                        type=str,
+                        help="Select model",
+                        required=True,
+                        default="LOG_REG",
+                        const="LOG_REG",
+                        nargs="?",
+                        choices=["LOG_REG"])
+    
+    parser.add_argument("-t", "--tests",
+                        type=str,
+                        help="Select tests",
+                        required=True,
+                        default="smoke",
+                        const="smoke",
+                        nargs="?",
+                        choices=["smoke", "func"])
+    
+    args = parser.parse_args()
+
+    predictor = Predictor(args)
     predictor.predict()

@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from typing import List, Dict
 from logger import Logger
 import pandas as pd
-from sklearn.preprocessing import StandardScaler
 import traceback
 import sys
 import pickle
@@ -11,13 +10,16 @@ import configparser
 import argparse
 import uvicorn
 
+SHOW_LOG = True
+
+
 class PredictionInput(BaseModel):
     X: List[Dict[str, float]]
     y: List[Dict[str, float]]
 
 class WebApp:
+    
     def __init__(self, args):
-        SHOW_LOG = True
         logger = Logger(SHOW_LOG)
         self.log = logger.get_logger(__name__)
 
@@ -76,7 +78,7 @@ if __name__ == "__main__":
                         default="LOG_REG",
                         const="LOG_REG",
                         nargs="?",
-                        choices=["LOG_REG", "RAND_FOREST", "KNN", "GNB", "D_TREE"])
+                        choices=["LOG_REG"])
     args = parser.parse_args()
 
     web_app = WebApp(args)
