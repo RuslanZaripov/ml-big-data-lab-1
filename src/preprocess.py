@@ -9,7 +9,19 @@ SHOW_LOG = True
 
 
 class DataMaker():
+    """
+    A class to handle the preparation and preprocessing of the Fashion-MNIST dataset.
+
+    This class is responsible for unzipping the dataset, splitting it into training and testing sets. 
+    It also saves the paths to these files in a configuration file for easy access.
+    """
+
     def __init__(self) -> None:
+        """
+        Initializes the DataMaker class.
+
+        Sets up the logger, configuration parser, and defines the paths for the dataset files.
+        """
         logger = Logger(SHOW_LOG)
         self.log = logger.get_logger(__name__)
 
@@ -28,6 +40,15 @@ class DataMaker():
         self.log.info("DataMaker is ready")
 
     def split_data_labels(self, data_path):
+        """
+        Splits the dataset into features (X) and labels (y).
+
+        Args:
+            data_path (str): Path to the dataset CSV file.
+
+        Returns:
+            tuple: Paths to the saved features (X) and labels (y) CSV files.
+        """
         dataset = pd.read_csv(data_path)
         
         X = pd.DataFrame(dataset.iloc[:, 1:].values)
@@ -50,6 +71,12 @@ class DataMaker():
         return X_path, y_path
 
     def split_data(self) -> bool:
+        """
+        Preprocesses the dataset by unzipping it and splitting it into training and testing sets.
+
+        Returns:
+            bool: True if all files were successfully created, False otherwise.
+        """
         self.log.info('Start preprocessing...')
 
         with zipfile.ZipFile(self.zip_data_path, 'r') as zip_ref:

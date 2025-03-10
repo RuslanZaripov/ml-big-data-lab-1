@@ -17,8 +17,20 @@ SHOW_LOG = True
 
 
 class Predictor():
+    """
+    A class used to handle model prediction and testing.
+
+    This class loads a trained model, performs smoke or functional tests, and logs the results.
+    It also saves experiment configurations and logs for further analysis.
+    """
 
     def __init__(self, args) -> None:
+        """
+        Initializes the Predictor class.
+
+        Args:
+            args (argparse.Namespace): Command-line arguments specifying the model and test type.
+        """
         logger = Logger(SHOW_LOG)
         self.log = logger.get_logger(__name__)
         
@@ -41,6 +53,16 @@ class Predictor():
         self.log.info("Predictor is ready")
 
     def predict(self) -> bool:
+        """
+        Performs prediction and testing based on the specified model and test type.
+
+        This method loads the specified model, performs either smoke or functional tests,
+        and logs the results. For functional tests, it also saves experiment configurations
+        and logs for further analysis.
+
+        Returns:
+            bool: True if the prediction and testing process completes successfully.
+        """
         try:
             classifier = pickle.load(open(self.config[self.args.model]["path"], "rb"))
         except FileNotFoundError:
