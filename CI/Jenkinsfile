@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDS=credentials('bigdata-ml-lab1')
+        DOCKERHUB_CREDS = credentials('bigdata-ml-lab1')
         LC_ALL = "en_US.UTF-8"
         LANG    = "en_US.UTF-8"
         LANGUAGE = "en_US.UTF-8"
@@ -11,7 +11,7 @@ pipeline {
     options {
         timestamps()
         skipDefaultCheckout(true)
-	}
+    }
     stages {
         stage('Clone github repository') {
             steps {
@@ -87,11 +87,23 @@ pipeline {
                 bat 'chcp 65001 && docker push zarus03/ml-big-data-lab-1:latest'
             }
         }
-	}
+    }
 
     post {
         always {
-            bat 'chcp 65001 && docker logout'
+            script {
+                bat '''
+                    chcp 65001
+                    echo "Stopping all running containers..."
+                    for /f "tokens=*" %%i in ('docker ps -q') do (
+                        docker stop %%i || echo "Failed to stop container %%i"
+                    )
+                    echo "Performing docker system cleanup..."
+                    docker system prune -f || echo "Docker system prune failed"
+                    docker logout || echo "Docker logout failed"
+                '''
+                cleanWs()
+            }
         }
     }
 }
